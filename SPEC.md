@@ -32,7 +32,7 @@
 | Model | Layer | Grain | Key | Notes |
 |---|---|---|---|---|
 | `stg_gias` | staging (view) | school | `urn` | rename/recast GIAS; filter to open schools |
-| `stg_attendance` | staging (view) | LA × week | `la_code` + `week_ending_date` | rename/recast DfE weekly attendance |
+| `stg_attendance` | staging (view) | LA × week × phase | `la_code` + `week_ending_date` + `school_type` | rename/recast DfE weekly attendance (kept per `school_type`/phase) |
 | `stg_ks4` | staging (view) | school × academic year | `urn` + `academic_year` | rename/recast KS4 performance |
 | `dim_school` | mart (table) | school | `urn` (natural PK) | carries `la_code`, `la_name`, `region`, `phase` as attributes |
 | `fct_attendance_weekly` | mart (table) | LA × week × phase | surrogate `md5(la_code‖year‖week‖phase)` | absence measures (attendance keeps phase, so grain includes it) |
