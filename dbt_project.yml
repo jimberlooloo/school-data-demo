@@ -1,0 +1,24 @@
+name: 'school_data'
+version: '1.0.0'
+config-version: 2
+
+profile: 'school_data'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  school_data:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

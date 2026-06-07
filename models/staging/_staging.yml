@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: stg_gias
+    description: Open establishments, school grain (PK = urn).
+    columns:
+      - name: urn
+        description: Unique Reference Number — primary key.
+        tests: [unique, not_null]
+      - name: la_code
+        tests: [not_null]
+      - name: phase
+        tests:
+          - accepted_values:
+              values: ['Primary', 'Secondary', 'Nursery', '16 plus', 'All-through',
+                       'Middle deemed secondary', 'Middle deemed primary', 'Not applicable']
+
+  - name: stg_attendance
+    description: LA × week × phase attendance (Local authority rows only, Total phase dropped).
+    columns:
+      - name: la_code
+        tests: [not_null]
+      - name: academic_year
+        tests: [not_null]
+      - name: phase
+        tests:
+          - accepted_values:
+              values: ['Primary', 'Secondary', 'Special']
+
+  - name: stg_ks4
+    description: KS4 headline (all-pupils) results, school × year grain.
+    columns:
+      - name: urn
+        description: PK — uniqueness proves the all-pupils (breakdown_topic='Total') filter worked.
+        tests: [unique, not_null]
+      - name: academic_year
+        tests: [not_null]

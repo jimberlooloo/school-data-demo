@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw DfE data landed faithfully (all STRING) by the ingest loader.
+    database: SCHOOLS
+    schema: RAW
+    tables:
+      - name: raw_gias
+        description: GIAS bulk establishment extract — one row per establishment.
+      - name: raw_attendance
+        description: DfE weekly pupil attendance — national/regional/LA × week × phase.
+      - name: raw_ks4
+        description: KS4 (GCSE) performance, school level, split by characteristic breakdown.

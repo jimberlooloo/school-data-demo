@@ -1,0 +1,27 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# dbt
+target/
+dbt_packages/
+logs/
+profiles.yml
+
+# Snowflake / credentials (never commit)
+*.key
+.snowflake/
+
+# Data — loader fetches these; never commit raw CSVs
+data/
+
+# Local Claude settings (machine-specific; should not be committed)
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

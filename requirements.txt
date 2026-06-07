@@ -1,0 +1,6 @@
+# App runtime (what Streamlit Community Cloud installs). Lean — DuckDB-backed, no Snowflake.
+streamlit
+duckdb
+pandas
+altair
+requests

@@ -1,0 +1,4 @@
+# Local dev / building the pipeline (ingest, dbt, live-Snowflake backend, mart export).
+# Pinned to dbt's stable 1.9 line (the latest dbt-snowflake drags in a dbt-core pre-release).
+-r requirements.txt
+dbt-snowflake>=1.9,<1.10

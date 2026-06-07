@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: dim_school
+    description: >
+      School dimension (grain school, PK urn). Currently-open schools, all phases —
+      'Open' plus 'Open, but proposed to close'. Schools that had 2024/25 KS4 results
+      but have since CLOSED are intentionally absent (see the fct_ks4_results.urn
+      relationship test, which warns on that expected closure churn).
+    columns:
+      - name: urn
+        description: Unique Reference Number — primary key.
+        tests: [unique, not_null]
+      - name: la_code
+        tests: [not_null]
+      - name: is_secondary
+        tests: [not_null]
+
+  - name: fct_attendance_weekly
+    description: Weekly attendance fact. Grain LA × week × phase.
+    columns:
+      - name: attendance_key
+        description: Surrogate over (la_code, year, week, phase) — enforces grain.
+        tests: [unique, not_null]
+      - name: la_code
+        description: >
+          Referential check to dim_school. WARN-level: 75 rows fail, all LA 909 =
+          Cumbria — abolished April 2023 and split into Cumberland and Westmorland &
+          Furness. Current GIAS uses the successor LA codes, so the old code is defunct.
+          A documented local-government-reorganisation key mismatch, not a bug; in
+          production this argues for an LA-code crosswalk.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_school')
+              field: la_code
+              config:
+                severity: warn
+
+  - name: fct_ks4_results
+    description: KS4 (GCSE) results fact. Grain school × academic year.
+    columns:
+      - name: ks4_key
+        description: Surrogate over (urn, year) — enforces grain.
+        tests: [unique, not_null]
+      - name: urn
+        description: >
+          FK to dim_school (clean FK-to-PK). WARN-level: ~119 schools had 2024/25
+          results but have since closed, so they are absent from the current-open
+          dim. Expected school-closure churn — documented, not hidden; in production
+          this argues for a slowly-changing dimension that retains closed schools.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_school')
+              field: urn
+              config:
+                severity: warn
