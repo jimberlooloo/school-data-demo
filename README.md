@@ -62,14 +62,6 @@ A **Streamlit** app over the marts ([`app/dashboard.py`](app/dashboard.py)) — 
 
 **AI question box:** type a question in plain English → an LLM writes SQL against the marts → the app **validates it** (SELECT-only, single-statement, mart-scoped, auto-LIMIT), **shows the SQL**, then runs it. Provider-swappable (`AI_PROVIDER` = `groq` / `gemini` / `anthropic` / `openai`; set the matching API key in `.env` locally, or **Streamlit Secrets** when hosted). **Groq** has a genuinely free tier (no card) and is the default. Read-only hardening via [`snowflake/setup_reader.sql`](snowflake/setup_reader.sql) + `SNOWFLAKE_AI_ROLE=READER`.
 
-![Secondary absence vs GCSE attainment by LA](docs/attainment-against-absence.png)
-
-*Secondary absence vs Attainment 8 by LA — the −0.60 relationship, with selective boroughs (Sutton, Kingston, Torbay) sitting above the trend line.*
-
-![Secondary absence trend by region](docs/absence-by-region.png)
-
-*Weekly secondary absence by region — London consistently lowest.*
-
 ## Method & caveats (read before quoting the numbers)
 - **Grain:** attendance is LA × week × phase (DfE doesn't publish it per school); KS4 is per school. The cross-fact insight joins them at **LA level** for **secondary** schools (Secondary + All-through).
 - **Year mismatch:** GCSE/KS4 results are **2024/25**; the loaded weekly attendance covers **2022/23–2023/24**. So the cross-fact insight pairs slightly different years — indicative (deprivation drives both and moves slowly), but not the same cohort. Refreshing attendance to the latest release is future work.
