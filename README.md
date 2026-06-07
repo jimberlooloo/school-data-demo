@@ -1,5 +1,7 @@
 # England Schools — Attendance & Attainment
 
+**▶️ Live demo: [school-data-demo.streamlit.app](https://school-data-demo.streamlit.app)**
+
 **Across England's local authorities, secondary-school pupil absence and GCSE attainment move together.** LAs in the *lowest*-absence quartile average **51.1** Attainment 8 points; those in the *highest*-absence quartile average just **44.6** — a 6.5-point gap, with an overall correlation of **−0.60**. This repo is a small **Snowflake + dbt** pipeline that lands three public DfE datasets (school register, weekly attendance, KS4 results), models them into a tested star schema, and surfaces that relationship. It was built **AI-first** — spec-first, agentic execution, every change through a reviewed PR.
 
 **Stack:** Snowflake · dbt · DuckDB · Streamlit · Python · Altair
@@ -68,8 +70,6 @@ A **Streamlit** app over the marts ([`app/dashboard.py`](app/dashboard.py)) — 
 
 *Weekly secondary absence by region — London consistently lowest.*
 
-![Dashboard overview](docs/dashboard.png)
-
 ## Method & caveats (read before quoting the numbers)
 - **Grain:** attendance is LA × week × phase (DfE doesn't publish it per school); KS4 is per school. The cross-fact insight joins them at **LA level** for **secondary** schools (Secondary + All-through).
 - **Year mismatch:** GCSE/KS4 results are **2024/25**; the loaded weekly attendance covers **2022/23–2023/24**. So the cross-fact insight pairs slightly different years — indicative (deprivation drives both and moves slowly), but not the same cohort. Refreshing attendance to the latest release is future work.
@@ -93,6 +93,6 @@ streamlit run app/dashboard.py           # local = live Snowflake; DATA_BACKEND=
 ## Deploy
 The dashboard is **decoupled from Snowflake for hosting**: `ingest/export_marts.py` exports the marts to a small read-only **`app/marts.duckdb`**, and the app reads that when no Snowflake is configured (`app/db.py` picks DuckDB unless `SNOWFLAKE_ACCOUNT` is set). That's a **serving layer in front of the warehouse** — no DB credential at the edge, and the hosted demo needs no live warehouse connection.
 
-On **Streamlit Community Cloud**: point it at this repo with entry `app/dashboard.py`; it installs the lean `requirements.txt` (no Snowflake/dbt) and serves the bundled DuckDB. Add **`GROQ_API_KEY`** in the app's **Secrets** to enable the AI box. Local dev still hits live Snowflake via `.env`.
+Live at **[school-data-demo.streamlit.app](https://school-data-demo.streamlit.app)** on **Streamlit Community Cloud**: it points at this repo with entry `app/dashboard.py`, installs the lean `requirements.txt` (no Snowflake/dbt), and serves the bundled DuckDB. `GROQ_API_KEY` is set in the app's **Secrets** to enable the AI box. Local dev still hits live Snowflake via `.env`.
 
 _Built AI-first: spec-first, agentic execution, every change through a reviewed PR._
