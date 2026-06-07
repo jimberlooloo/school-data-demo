@@ -156,7 +156,8 @@ with tab_att:
         alt.Chart(trend).mark_line(point=True).encode(
             x=alt.X("period_label:N", sort=alt.SortField("period_idx"), title="Week"),
             y=alt.Y("mean_absence:Q", title="Mean overall absence %"),
-            color=alt.Color("region:N", title="Region"),
+            color=alt.Color("region:N", title="Region",
+                            legend=alt.Legend(orient="bottom", symbolLimit=0)),
             tooltip=["region", "period_label", alt.Tooltip("mean_absence:Q", format=".2f")],
         ).properties(height=400),
         use_container_width=True,
