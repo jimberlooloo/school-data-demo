@@ -2,6 +2,8 @@
 
 **Across England's local authorities, secondary-school pupil absence and GCSE attainment move together.** LAs in the *lowest*-absence quartile average **51.1** Attainment 8 points; those in the *highest*-absence quartile average just **44.6** — a 6.5-point gap, with an overall correlation of **−0.60**. This repo is a small **Snowflake + dbt** pipeline that lands three public DfE datasets (school register, weekly attendance, KS4 results), models them into a tested star schema, and surfaces that relationship. It was built **AI-first** — spec-first, agentic execution, every change through a reviewed PR.
 
+**Stack:** Snowflake · dbt · DuckDB · Streamlit · Python · Altair
+
 > See [SPEC.md](SPEC.md) for the spec/contract.
 
 ## Pipeline
@@ -54,9 +56,9 @@ SQL for these lives in [`analyses/`](analyses/) (dbt analyses, referencing the m
 
 ## Dashboard
 
-Local Streamlit app over the marts ([`app/dashboard.py`](app/dashboard.py)) — headline metrics, an absence trend by region × phase, a regional ranking, the cross-fact scatter, a searchable school-level GCSE attainment table (every school with 2024/25 KS4 results, named — Attainment 8 / EBacc / %grade-5), and a two-school side-by-side comparison. Organised into **tabs** (Ask · Attendance · Attainment · Compare) and **mobile-friendly** (no sidebar).
+A **Streamlit** app over the marts ([`app/dashboard.py`](app/dashboard.py)) — headline metrics, an absence trend by region × phase, a regional ranking, the cross-fact scatter, a searchable school-level GCSE attainment table (every school with 2024/25 KS4 results, named — Attainment 8 / EBacc / %grade-5), and a two-school side-by-side comparison. Organised into **tabs** (Ask · Attendance · Attainment · Compare) and **mobile-friendly** (no sidebar).
 
-**AI question box (optional, Block 6b):** type a question in plain English → an LLM writes Snowflake SQL against the marts → the app **validates it** (SELECT-only, single-statement, mart-scoped, auto-LIMIT), **shows the SQL**, then runs it. Provider-swappable (`AI_PROVIDER` = `groq` / `gemini` / `anthropic` / `openai`; set the matching API key in `.env`). **Groq** has a genuinely free tier (no card) and is the default. Read-only hardening via [`snowflake/setup_reader.sql`](snowflake/setup_reader.sql) + `SNOWFLAKE_AI_ROLE=READER`.
+**AI question box:** type a question in plain English → an LLM writes SQL against the marts → the app **validates it** (SELECT-only, single-statement, mart-scoped, auto-LIMIT), **shows the SQL**, then runs it. Provider-swappable (`AI_PROVIDER` = `groq` / `gemini` / `anthropic` / `openai`; set the matching API key in `.env` locally, or **Streamlit Secrets** when hosted). **Groq** has a genuinely free tier (no card) and is the default. Read-only hardening via [`snowflake/setup_reader.sql`](snowflake/setup_reader.sql) + `SNOWFLAKE_AI_ROLE=READER`.
 
 ![Secondary absence vs GCSE attainment by LA](docs/attainment-against-absence.png)
 
@@ -89,7 +91,7 @@ streamlit run app/dashboard.py           # local = live Snowflake; DATA_BACKEND=
 ```
 
 ## Deploy
-The dashboard is **decoupled from Snowflake for hosting**: `ingest/export_marts.py` exports the marts to a small read-only **`app/marts.duckdb`**, and the app reads that when no Snowflake is configured (`app/db.py` picks DuckDB unless `SNOWFLAKE_ACCOUNT` is set). That's a **serving layer in front of the warehouse** — no DB credential at the edge, and the demo survives the Snowflake trial.
+The dashboard is **decoupled from Snowflake for hosting**: `ingest/export_marts.py` exports the marts to a small read-only **`app/marts.duckdb`**, and the app reads that when no Snowflake is configured (`app/db.py` picks DuckDB unless `SNOWFLAKE_ACCOUNT` is set). That's a **serving layer in front of the warehouse** — no DB credential at the edge, and the hosted demo needs no live warehouse connection.
 
 On **Streamlit Community Cloud**: point it at this repo with entry `app/dashboard.py`; it installs the lean `requirements.txt` (no Snowflake/dbt) and serves the bundled DuckDB. Add **`GROQ_API_KEY`** in the app's **Secrets** to enable the AI box. Local dev still hits live Snowflake via `.env`.
 
